@@ -41,7 +41,6 @@ export default tseslint.config(
       'camelcase': 'warn',
       'no-mixed-spaces-and-tabs': 'error',
       'eqeqeq': ['error', 'always'],
-      'no-unused-vars': ['warn'],
       'quotes': ['error', 'single'],  // Используем одинарные кавычки
       'semi': ['error', 'always'],  // Требуем точку с запятой
       'indent': ['error', 2],  // Делаем отступ в 2 пробела
@@ -53,8 +52,7 @@ export default tseslint.config(
         "error",
         "1tbs", // Один стиль скобок
         { "allowSingleLine": false } // Запрещает одну строку для скобок
-      ]
-
+      ],
     },
   },
 );
