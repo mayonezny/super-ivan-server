@@ -16,4 +16,8 @@ export class AppController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.appService.handlePost(body);
   }
+  @Get('getposts')
+  handleGetPosts(): object {
+    return this.appService.handleGetPosts();
+  }
 }
