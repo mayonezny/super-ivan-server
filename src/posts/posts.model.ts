@@ -1,11 +1,11 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, AfterCreate } from 'sequelize-typescript';
 
 @Table({ tableName: 'posts', timestamps: false })
 export class Post extends Model<Post> {
   @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
     id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING })
     href: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
@@ -22,4 +22,11 @@ export class Post extends Model<Post> {
 
   @Column({ type: DataType.STRING, allowNull: false })
     content: string;
+
+  @AfterCreate
+  static async setHref(instance: Post) {
+    console.log(instance.author);
+    instance.href = `${instance.author}/${instance.id}`;
+    await instance.save();
+  }
 }

@@ -30,9 +30,8 @@ export class PostsController {
 }
 //пример тестовых данных:
 // {
-//   "href": "ivan/1",
 //   "pic": "/babka.png",
-//   "title": "жОСКА САСАЛ ЧАСТЬ 4",
-//   "author": "Zapara",
-//   "content": "ОГО 4"
+//   "title": "иВАaaaaaaНЧУК",
+//   "author": "Zaparaaaaaa",
+//   "content": "ОГО Уaaaaa"
 //   }
