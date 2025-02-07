@@ -1,14 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './posts.model';
-import { CreationAttributes } from 'sequelize';
+import { CreationAttributes, Op } from 'sequelize';
+import { Sequelize } from 'sequelize'; // Правильный импорт для fn
+
+// Далее используем Sequelize.fn
 
 @Injectable()
 export class PostsService {
   constructor(@InjectModel(Post) private postModel: typeof Post) {}
 
-  returnPosts(){
-    return this.postModel.findAll();
+  returnPosts(keyword?: string | null){
+    const safeKeyword: string | null = keyword ? keyword.replace(' ', '&') : null;
+    return safeKeyword ? this.postModel.findAll({
+      where: {
+        [Op.or]: [
+          {
+            title: {
+              [Op.match]: Sequelize.fn('to_tsquery', 'russian', `${safeKeyword}:*`),
+            },
+          },
+          {
+            author: {
+              [Op.match]: Sequelize.fn('to_tsquery', 'russian', `${safeKeyword}:*`),
+            },
+          },
+        ],
+      },
+    }): this.postModel.findAll();
   }
 
   makePost(data: CreationAttributes<Post>):Promise<Post>{

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreationAttributes } from 'sequelize';
 import { Post as PostModel } from './posts.model';
@@ -7,20 +7,9 @@ import { Post as PostModel } from './posts.model';
 export class PostsController {
   constructor(private readonly postsService: PostsService) { }
 
-  //   @Get('zaparka')
-  //   getHello(): object {
-  //     console.log('allo');
-  //     return this.postsService.getHello();
-  //   }
-  //   @Post('tatarka')
-  //   handlePost(@Body() body: any): string {
-  //     console.log('body' + body.boris);
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  //     return this.postsService.handlePost(body);
-  //   }
   @Get('getposts')
-  handleGetPosts(): object {
-    return this.postsService.returnPosts();
+  handleGetPosts(@Query('keyword') keyword: string | null): object {
+    return this.postsService.returnPosts(keyword);
   }
 
   @Post('makepost')
