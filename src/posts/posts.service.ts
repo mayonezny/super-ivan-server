@@ -33,4 +33,9 @@ export class PostsService {
   makePost(data: CreationAttributes<Post>):Promise<Post>{
     return this.postModel.create(data);
   }
+
+  async deletePost(id: number): Promise<boolean> {
+    const deleted = await this.postModel.destroy({ where: { id } });
+    return deleted > 0; // Если удалено больше 0 строк, значит удаление прошло успешно
+  }
 }
