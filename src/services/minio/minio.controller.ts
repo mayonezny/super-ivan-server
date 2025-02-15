@@ -30,7 +30,7 @@ export class MinioController {
     const buffer = await pic.toBuffer();
     try {
       const result = await this.minioService.uploadFile('postimgs', pic.filename, buffer);
-      const url = await this.minioService.createUrl('postimgs', `postimgs/${pic.filename}`);
+      const url = await this.minioService.createUrl('postimgs', pic.filename);
       console.log(url);  // Ссылка на файл
 
       return { url: url };
