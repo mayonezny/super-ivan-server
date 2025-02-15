@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { PostsModule } from './posts/posts.module';
+import { MinioModule } from './services/minio/minio.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PostsModule } from './posts/posts.module';
       synchronize: true, // Использовать для разработки (в проде лучше миграции)
     }),
     PostsModule,
+    MinioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
