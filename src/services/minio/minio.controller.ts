@@ -15,7 +15,7 @@ interface FileUploadBody {
   };
 }
 
-@Controller('api')
+@Controller('api/posts')
 export class MinioController {
   constructor(private readonly minioService: MinioService) {}
 

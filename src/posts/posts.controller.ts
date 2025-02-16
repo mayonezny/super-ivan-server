@@ -4,7 +4,7 @@ import { PostsService } from './posts.service';
 import { CreationAttributes } from 'sequelize';
 import { Post as PostModel } from './posts.model';
 
-@Controller('api')
+@Controller('api/posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) { }
 
@@ -13,7 +13,7 @@ export class PostsController {
     return this.postsService.returnPosts(keyword);
   }
 
-  @Post('makepost')
+  @Post('addpost')
   handleMakePost(@Body() body: CreationAttributes<PostModel>): object {
     return this.postsService.makePost(body);
   }

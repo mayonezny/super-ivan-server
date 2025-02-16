@@ -11,7 +11,7 @@ export class Post extends Model<Post> {
   @Column({ type: DataType.STRING, allowNull: false })
     pic: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
     title: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
