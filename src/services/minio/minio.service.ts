@@ -25,6 +25,17 @@ export class MinioService {
     }
   }
 
+  async deleteFile(bucketName: string, filename: string) {
+    try {
+      await this.minioClient.removeObject(bucketName, filename);
+      console.log(`Файл ${filename} удалён из ${bucketName}`);
+      return { message: `Файл ${filename} удалён` };
+    } catch (error) {
+      console.error('Ошибка при удалении файла:', error);
+      throw new Error('Ошибка удаления файла');
+    }
+  }
+
   createUrl(bucketname: string, path: string){
     return this.minioClient.presignedGetObject(bucketname, path);
   }

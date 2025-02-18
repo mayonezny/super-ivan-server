@@ -1,5 +1,5 @@
 
-import { Controller, Post, Req } from '@nestjs/common';
+import { Controller, Delete, Param, Post, Req } from '@nestjs/common';
 import { MinioService } from './minio.service';
 import { FastifyRequest } from 'fastify';
 
@@ -31,13 +31,18 @@ export class MinioController {
     try {
       const result = await this.minioService.uploadFile('postimgs', pic.filename, buffer);
       const url = await this.minioService.createUrl('postimgs', pic.filename);
-      console.log(url);  // Ссылка на файл
+      console.log(pic.filename);  // Ссылка на файл
 
-      return { url: url };
+      return { url: url, filename: pic.filename };
     } catch (error) {
       console.error('Ошибка при загрузке файла в MinIO:', error);
       throw new Error('Ошибка при загрузке файла');
     }
+  }
+
+  @Delete('postPicImgDelete/:filename')
+  async deleteFile(@Param('filename') filename: string) {
+    return this.minioService.deleteFile('postimgs', filename);
   }
 }
 //пример тестовых данных:

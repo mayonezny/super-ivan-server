@@ -23,6 +23,9 @@ export class Post extends Model<Post> {
   @Column({ type: DataType.STRING, allowNull: false })
     content: string;
 
+  @Column({ type: DataType.STRING })
+    picFilename: string;
+
   @AfterCreate
   static async setHref(instance: Post) {
     console.log(instance.author);
