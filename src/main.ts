@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import multipart, { fastifyMultipart } from '@fastify/multipart';
+import { fastifyMultipart } from '@fastify/multipart';
 // eslint-disable-next-line no-magic-numbers
 const maxSize = 3 * 1024 * 1024;
 const PORT = 80;

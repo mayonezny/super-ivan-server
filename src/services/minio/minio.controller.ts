@@ -31,7 +31,7 @@ export class MinioController {
     try {
       const result = await this.minioService.uploadFile('postimgs', pic.filename, buffer);
       const url = await this.minioService.createUrl('postimgs', pic.filename);
-      console.log(pic.filename);  // Ссылка на файл
+      // Ссылка на файл
 
       return { url: url, filename: pic.filename };
     } catch (error) {
@@ -42,7 +42,7 @@ export class MinioController {
 
   @Delete('postPicImgDelete/:filename')
   async deleteFile(@Param('filename') filename: string) {
-    return this.minioService.deleteFile('postimgs', filename);
+    return await this.minioService.deleteFile('postimgs', filename);
   }
 }
 //пример тестовых данных:

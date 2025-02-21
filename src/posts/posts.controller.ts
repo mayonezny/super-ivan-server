@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreationAttributes } from 'sequelize';
 import { Post as PostModel } from './posts.model';
@@ -16,6 +16,12 @@ export class PostsController {
   @Post('addpost')
   handleMakePost(@Body() body: CreationAttributes<PostModel>): object {
     return this.postsService.makePost(body);
+  }
+
+  @Put('updatepost/:id')
+  handleUpdatePost(@Param('id') id: string, @Body() body: CreationAttributes<PostModel>): object{
+    console.log(id, '  ыщыф  ', body);
+    return this.postsService.updatePost(Number(id), body);
   }
 
   @Delete('deletepost/:id')

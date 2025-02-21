@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './posts.model';
@@ -32,6 +33,10 @@ export class PostsService {
 
   makePost(data: CreationAttributes<Post>):Promise<Post>{
     return this.postModel.create(data);
+  }
+
+  updatePost(id: number, data: CreationAttributes<Post>){
+    return this.postModel.update({ title: data.title, content: data.content}, { where: { id }, returning: true });
   }
 
   async deletePost(id: number): Promise<boolean> {
