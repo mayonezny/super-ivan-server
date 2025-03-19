@@ -4,7 +4,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { fastifyMultipart } from '@fastify/multipart';
 // eslint-disable-next-line no-magic-numbers
 const maxSize = 3 * 1024 * 1024;
-const PORT = 80;
+const PORT = 8080;
 async function bootstrap() {
   // eslint-disable-next-line max-len
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({ bodyLimit: maxSize }), { bodyParser: false });
