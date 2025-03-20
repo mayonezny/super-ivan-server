@@ -1,15 +1,14 @@
-import { randomUUID, UUID } from 'crypto';
-import { UUIDV4 } from 'sequelize';
+import { UUID } from 'crypto';
 import { Table, Column, Model, DataType, BeforeUpdate } from 'sequelize-typescript';
 
 @Table({ tableName: 'users', timestamps: false })
 export class User extends Model<User> {
-  @Column({ type: DataType.UUIDV4, primaryKey: true })
+  @Column({ type: DataType.UUID, primaryKey: true })
     uuid: UUID;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
     name: string;
-  
+
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
     email: string;
 
@@ -18,7 +17,7 @@ export class User extends Model<User> {
 
   @Column({ type: DataType.STRING })
     pic: string;
-  
+
   @Column({ type: DataType.STRING })
     picFilename: string;
 
@@ -26,7 +25,7 @@ export class User extends Model<User> {
     group: string;
 
   @Column({ type: DataType.DATE })
-    birthday: Date; 
+    birthday: Date;
 
   @Column({ type: DataType.DATE, defaultValue: DataType.NOW, allowNull: false })
     createdat: Date;
@@ -38,8 +37,8 @@ export class User extends Model<User> {
   // }
   @BeforeUpdate
   static protectFields(user: User) {
-    if (user.changed("uuid")) {
-      throw new Error("Дурашка! Зачем ты хочешь обновить uuid? А-та-та!");
+    if (user.changed('uuid')) {
+      throw new Error('Дурашка! Зачем ты хочешь обновить uuid? А-та-та!');
     }
   }
 }
