@@ -5,6 +5,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { PostsModule } from './posts/posts.module';
 import { MinioModule } from './services/minio/minio.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
     PostsModule,
+    UsersModule,
     MinioModule,
   ],
   controllers: [AppController],

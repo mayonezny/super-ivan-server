@@ -1,0 +1,47 @@
+/* eslint-disable max-len */
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { User } from './users.model';
+import { CreationAttributes, Op } from 'sequelize';
+import { Sequelize } from 'sequelize'; // Правильный импорт для fn
+import { UUID } from 'crypto';
+
+// Далее используем Sequelize.fn
+
+@Injectable()
+export class UsersService {
+  constructor(@InjectModel(User) private userModel: typeof User) {}
+
+  fetchUsers(keyword?: string | null){
+    const safeKeyword: string | null = keyword ? keyword.replace(' ', '&') : null;
+    return safeKeyword ? this.userModel.findAll({
+      where: {
+        [Op.or]: [
+          {
+            // title: {
+            //   [Op.match]: Sequelize.fn('to_tsquery', 'russian', `${safeKeyword}:*`),
+            // },
+          },
+          {
+            // author: {
+            //   [Op.match]: Sequelize.fn('to_tsquery', 'russian', `${safeKeyword}:*`),
+            // },
+          },
+        ],
+      },
+    }): this.userModel.findAll();
+  }
+
+  createUser(data: CreationAttributes<User>):Promise<User>{
+    return this.userModel.create(data);
+  }
+
+  updateUser(uuid: UUID, data: CreationAttributes<User>){
+    return this.userModel.update(data, { where: { uuid }, returning: true });
+  }
+
+  async deleteUser(uuid: UUID): Promise<boolean> {
+    const deleted = await this.userModel.destroy({ where: { uuid } });
+    return deleted > 0; // Если удалено больше 0 строк, значит удаление прошло успешно
+  }
+}

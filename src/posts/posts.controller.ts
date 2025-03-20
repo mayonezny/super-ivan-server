@@ -20,7 +20,6 @@ export class PostsController {
 
   @Put('updatepost/:id')
   handleUpdatePost(@Param('id') id: string, @Body() body: CreationAttributes<PostModel>): object{
-    console.log(id, '  ыщыф  ', body);
     return this.postsService.updatePost(Number(id), body);
   }
 

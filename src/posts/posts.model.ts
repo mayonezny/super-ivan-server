@@ -8,7 +8,7 @@ export class Post extends Model<Post> {
   @Column({ type: DataType.STRING })
     href: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING })
     pic: string;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
@@ -28,7 +28,6 @@ export class Post extends Model<Post> {
 
   @AfterCreate
   static async setHref(instance: Post) {
-    console.log(instance.author);
     instance.href = `${instance.author}/${instance.id}`;
     await instance.save();
   }
