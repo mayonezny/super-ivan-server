@@ -1,10 +1,10 @@
 import { randomUUID, UUID } from 'crypto';
 import { UUIDV4 } from 'sequelize';
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, BeforeUpdate } from 'sequelize-typescript';
 
 @Table({ tableName: 'users', timestamps: false })
 export class User extends Model<User> {
-  @Column({ type: DataType.UUIDV4, primaryKey: true, defaultValue: randomUUID() })
+  @Column({ type: DataType.UUIDV4, primaryKey: true })
     uuid: UUID;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
@@ -36,4 +36,10 @@ export class User extends Model<User> {
   //   instance.href = `${instance.author}/${instance.id}`;
   //   await instance.save();
   // }
+  @BeforeUpdate
+  static protectFields(user: User) {
+    if (user.changed("uuid")) {
+      throw new Error("Дурашка! Зачем ты хочешь обновить uuid? А-та-та!");
+    }
+  }
 }

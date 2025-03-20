@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   updateUser(uuid: UUID, data: CreationAttributes<User>){
-    return this.userModel.update(data, { where: { uuid }, returning: true });
+    return this.userModel.update(data, { where: { uuid }, returning: true, individualHooks: true });
   }
 
   async deleteUser(uuid: UUID): Promise<boolean> {
