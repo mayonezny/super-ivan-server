@@ -1,9 +1,10 @@
-import { UUID } from 'crypto';
+import { randomUUID, UUID } from 'crypto';
+import { UUIDV4 } from 'sequelize';
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
 @Table({ tableName: 'users', timestamps: false })
 export class User extends Model<User> {
-  @Column({ type: DataType.UUIDV4, primaryKey: true })
+  @Column({ type: DataType.UUIDV4, primaryKey: true, defaultValue: randomUUID() })
     uuid: UUID;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
