@@ -1,18 +1,21 @@
 import { UUID } from 'crypto';
-import { Table, Column, Model, DataType, BeforeUpdate } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, BeforeUpdate, AfterCreate } from 'sequelize-typescript';
 
 @Table({ tableName: 'users', timestamps: false })
 export class User extends Model<User> {
-  @Column({ type: DataType.UUID, primaryKey: true })
+  @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4, primaryKey: true })
     uuid: UUID;
 
-  @Column({ type: DataType.STRING, allowNull: false, unique: true })
+  @Column({ type: DataType.STRING, unique: true })
     name: string;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
     email: string;
 
   @Column({ type: DataType.STRING, allowNull: false })
+    password: string;  
+
+  @Column({ type: DataType.STRING, unique: true })
     href: string;
 
   @Column({ type: DataType.STRING })
@@ -29,12 +32,13 @@ export class User extends Model<User> {
 
   @Column({ type: DataType.DATE, defaultValue: DataType.NOW, allowNull: false })
     createdat: Date;
-  // @AfterCreate
-  // static async setHref(instance: User) {
-  //   console.log(instance.author);
-  //   instance.href = `${instance.author}/${instance.id}`;
-  //   await instance.save();
-  // }
+    
+  @AfterCreate
+  static async setHref(instance: User) {
+    console.log(instance.uuid);
+    instance.href = instance.uuid;
+    await instance.save();
+  }
   @BeforeUpdate
   static protectFields(user: User) {
     if (user.changed('uuid')) {

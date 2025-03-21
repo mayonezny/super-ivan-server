@@ -5,7 +5,7 @@ import { CreationAttributes } from 'sequelize';
 import { User } from '../users.model';
 import { UUID } from 'crypto';
 
-@Controller('api/users')
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
