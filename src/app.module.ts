@@ -6,6 +6,7 @@ import { PostsModule } from './posts/posts.module';
 import { MinioModule } from './services/minio/minio.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
+import { Dialect } from 'sequelize';
 
 @Module({
   imports: [
@@ -13,17 +14,20 @@ import { UsersModule } from './users/users.module';
       isGlobal: true,  // делает переменные доступными во всем проекте
     }),
     SequelizeModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        dialect: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        // eslint-disable-next-line no-magic-numbers
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USER'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
-        autoLoadModels: true, // Автоматически загружать модели
-        synchronize: true, // Использовать для разработки (в проде лучше миграции)
-      }),
+      useFactory: (configService: ConfigService) => {
+        const dbConfig = {
+          dialect: 'postgres' as Dialect,
+          host: configService.get<string>('DB_HOST'),
+          port: configService.get<number>('DB_PORT'),
+          username: configService.get<string>('DB_USER_DEV'),
+          password: configService.get<string>('DB_PASSWORD_DEV'),
+          database: configService.get<string>('DB_NAME'),
+          autoLoadModels: true,
+          synchronize: true,
+        };
+
+        return dbConfig;
+      },
       inject: [ConfigService],
     }),
     PostsModule,
