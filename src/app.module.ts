@@ -7,6 +7,7 @@ import { MinioModule } from './services/minio/minio.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { Dialect } from 'sequelize';
+import { AuthModule } from './users/auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { Dialect } from 'sequelize';
     }),
     PostsModule,
     UsersModule,
+    AuthModule,
     MinioModule,
   ],
   controllers: [AppController],

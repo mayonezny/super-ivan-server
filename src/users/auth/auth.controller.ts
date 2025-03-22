@@ -1,13 +1,14 @@
-// eslint-disable-next-line max-len
+
 import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreationAttributes } from 'sequelize';
 import { User } from '../users.model';
 import { UUID } from 'crypto';
+import { UsersService } from '../users.service';
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService, private readonly usersService: UsersService) { }
 
   // @Get('fetchusers')
   // handleFetchUsers(@Query('keyword') keyword: string | null): object {
@@ -18,6 +19,14 @@ export class AuthController {
   // handleCreateUser(@Body() body: CreationAttributes<User>): object {
   //   return this.usersService.createUser(body);
   // }
+
+  @Post('register')
+  async handleRegister(@Body() body: CreationAttributes<User>): Promise<object> {
+    console.log(body);
+    const { email, password, token } = await this.authService.register(body);
+    await this.usersService.createUser({ email, password });
+    return { token: token };
+  }
 
   // @Put('updateuser/:uuid')
   // handleUpdateUser(@Param('uuid') uuid: UUID, @Body() body: CreationAttributes<User>): object{

@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
@@ -32,7 +32,7 @@ export class UsersService {
     }): this.userModel.findAll();
   }
 
-  createUser(data: CreationAttributes<User>):Promise<User>{
+  createUser(data):Promise<User>{
     return this.userModel.create(data);
   }
 
