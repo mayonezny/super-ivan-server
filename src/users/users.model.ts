@@ -6,14 +6,14 @@ export class User extends Model<User> {
   @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4, primaryKey: true })
     uuid: UUID;
 
-  @Column({ type: DataType.STRING, allowNull: false, unique: true })
+  @Column({ type: DataType.STRING, unique: true })
     name: string;
 
   @Column({ type: DataType.STRING, allowNull: false, unique: true })
     email: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-    password: string;
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
+    password: string;  
 
   @Column({ type: DataType.STRING })
     href: string;
@@ -32,12 +32,12 @@ export class User extends Model<User> {
 
   @Column({ type: DataType.DATE, defaultValue: DataType.NOW, allowNull: false })
     createdat: Date;
-
-  @AfterCreate
-  static async setHref(instance: User) {
-    instance.href = `${instance.uuid}`;
-    await instance.save();
-  }
+  
+//   @AfterCreate
+//   static async setHref(instance: User) {
+//     instance.href = `${instance.uuid}`;
+//     await instance.save();
+//   }
   @BeforeUpdate
   static protectFields(user: User) {
     if (user.changed('uuid')) {

@@ -16,6 +16,7 @@ export class UsersController {
 
   @Post('createuser')
   handleCreateUser(@Body() body: CreationAttributes<User>): object {
+    console.log(body);
     return this.usersService.createUser(body);
   }
 
