@@ -1,10 +1,11 @@
 
-import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreationAttributes } from 'sequelize';
 import { User } from '../users.model';
 import { UUID } from 'crypto';
 import { UsersService } from '../users.service';
+import { FastifyReply } from 'fastify';
 
 @Controller('api/auth')
 export class AuthController {
@@ -21,11 +22,24 @@ export class AuthController {
   // }
 
   @Post('register')
-  async handleRegister(@Body() body: CreationAttributes<User>): Promise<object> {
+  async handleRegister(@Body() body: CreationAttributes<User>, @Res() reply: FastifyReply): Promise<void> {
     console.log(body);
-    const { email, password, token } = await this.authService.register(body);
-    await this.usersService.createUser({ email, password });
-    return { token: token };
+    const { email, password, accessToken, refreshToken } = await this.authService.register(body);
+    console.log('zzz', refreshToken);
+    try{
+      await this.usersService.createUser({ email, password });
+    } catch(err: unknown){
+      console.log(err);
+      reply.status(500).send({ err: err });
+    }
+    reply.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 20 * 24 * 60 * 60, // Fastify ожидает время в секундах
+      path:'/',
+    })
+      .send({ accessToken: accessToken });
   }
 
   // @Put('updateuser/:uuid')

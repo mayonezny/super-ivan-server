@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { CreationAttributes, Op } from 'sequelize';
-import { Sequelize } from 'sequelize'; // Правильный импорт для fn
 import { UUID } from 'crypto';
 
 // Далее используем Sequelize.fn
