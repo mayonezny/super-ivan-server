@@ -1,7 +1,8 @@
 
-import { Controller, Delete, Param, Post, Req } from '@nestjs/common';
+import { Controller, Delete, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { MinioService } from './minio.service';
 import { FastifyRequest } from 'fastify';
+import { AuthGuard } from '@nestjs/passport';
 
 interface FileUploadBody {
   pic: {
@@ -19,6 +20,7 @@ interface FileUploadBody {
 export class MinioController {
   constructor(private readonly minioService: MinioService) {}
 
+  @UseGuards(AuthGuard('jwt-access'))
   @Post('postPicImgSave')
   async uploadFile(@Req() req: FastifyRequest) {
 
@@ -40,6 +42,7 @@ export class MinioController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt-access'))
   @Delete('postPicImgDelete/:filename')
   async deleteFile(@Param('filename') filename: string) {
     return await this.minioService.deleteFile('postimgs', filename);

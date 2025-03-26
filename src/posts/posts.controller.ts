@@ -1,8 +1,9 @@
 // eslint-disable-next-line max-len
-import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreationAttributes } from 'sequelize';
 import { Post as PostModel } from './posts.model';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('api/posts')
 export class PostsController {
@@ -12,17 +13,17 @@ export class PostsController {
   handleGetPosts(@Query('keyword') keyword: string | null): object {
     return this.postsService.returnPosts(keyword);
   }
-
+  @UseGuards(AuthGuard('jwt-access'))
   @Post('addpost')
   handleMakePost(@Body() body: CreationAttributes<PostModel>): object {
     return this.postsService.makePost(body);
   }
-
+  @UseGuards(AuthGuard('jwt-access'))
   @Put('updatepost/:id')
   handleUpdatePost(@Param('id') id: string, @Body() body: CreationAttributes<PostModel>): object{
     return this.postsService.updatePost(Number(id), body);
   }
-
+  @UseGuards(AuthGuard('jwt-access'))
   @Delete('deletepost/:id')
   async deletePost(@Param('id') id: string) {
     const deleted = await this.postsService.deletePost(Number(id));
