@@ -1,11 +1,11 @@
 
-import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put, Res, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreationAttributes } from 'sequelize';
 import { User } from '../users.model';
 import { UUID } from 'crypto';
 import { UsersService } from '../users.service';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 @Controller('api/auth')
 export class AuthController {
@@ -22,7 +22,7 @@ export class AuthController {
   // }
 
   @Post('register')
-  async handleRegister(@Body() body: CreationAttributes<User>, @Res() reply: FastifyReply): Promise<void> {
+  async handleRegister(@Body() body: CreationAttributes<User>, @Res() res: FastifyReply): Promise<void> {
     console.log(body);
     const { email, password, accessToken, refreshToken } = await this.authService.register(body);
     console.log('zzz', refreshToken);
@@ -30,9 +30,9 @@ export class AuthController {
       await this.usersService.createUser({ email, password });
     } catch(err: unknown){
       console.log(err);
-      reply.status(500).send({ err: err });
+      res.status(500).send({ err: err });
     }
-    reply.cookie('refreshToken', refreshToken, {
+    res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
@@ -40,6 +40,34 @@ export class AuthController {
       path:'/',
     })
       .send({ accessToken: accessToken });
+  }
+
+  @Post('refresh')
+  async handleRefresh(@Req() req: FastifyRequest, @Res() res: FastifyReply): Promise<void> {
+    try {
+      // Берём refresh-токен из куки
+      const refreshToken = req.cookies?.refreshToken;
+  
+      if (!refreshToken) {
+        throw new UnauthorizedException('Refresh token отсутствует');
+      }
+  
+      // Проверяем и валидируем refresh-токен
+      const tokens = await this.authService.refreshToken(refreshToken);
+  
+      // Ставим новый refresh-токен в cookie
+      res
+        .cookie('refreshToken', tokens.refreshToken, {
+          httpOnly: true,
+          secure: true, // HTTPS-only
+          sameSite: 'none', // Или 'lax', в зависимости от вашей ситуации
+          maxAge: 20 * 24 * 60 * 60,
+        })
+        .send({ accessToken: tokens.accessToken });
+  
+    } catch (error) {
+      throw new UnauthorizedException('Refresh token невалиден или истёк');
+    }
   }
 
   // @Put('updateuser/:uuid')

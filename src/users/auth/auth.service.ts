@@ -1,5 +1,5 @@
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../users.model';
 import { CreationAttributes, Op } from 'sequelize';
@@ -39,10 +39,30 @@ export class AuthService {
   generateRefreshToken(payload: object): string {
     return this.jwtService.sign(payload, {
       secret: this.jwtRefreshSecret,
-      expiresIn: '30d',
+      expiresIn: '20d',
     }); // Генерация токена с 30days сроком действия
   }
 
+  async refreshToken(token: string){
+    try {
+      const decoded = this.jwtService.verify(token, { secret: this.configService.get('JWT_REFRESH_SECRET') });
+  
+      const email = decoded.email;
+  
+      // Опционально: проверить, есть ли пользователь с таким id и не заблокирован ли он.
+  
+      const payload = { email: email };
+  
+      // Генерируем новые токены
+      const accessToken = this.jwtService.sign(payload, { secret: this.configService.get('JWT_SECRET'), expiresIn: '10m' });
+      const refreshToken = this.jwtService.sign(payload, { secret: this.configService.get('JWT_REFRESH_SECRET'), expiresIn: '20d' });
+  
+      return { accessToken, refreshToken };
+      
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
   // verifyToken(token: string, refresh: boolean = false): any {
   //   try {
   //     return !refresh ? jwt.verify(token, this.jwtSecret) : jwt.verify(token, this.jwtRefreshSecret); // Проверка и декодирование токена
