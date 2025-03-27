@@ -45,12 +45,14 @@ export class AuthController {
   @Post('refresh')
   async handleRefresh(@Req() req: FastifyRequest, @Res() res: FastifyReply): Promise<void> {
     try {
-      // Берём refresh-токен из куки
+      // Берём refresh-токен из кук
+      
       const refreshToken = req.cookies?.refreshToken;
-  
-      if (!refreshToken) {
+      console.log('rtyr', refreshToken)
+      if (refreshToken === undefined) {
+        console.log('sdfsdf', req)
         throw new UnauthorizedException('Refresh token отсутствует');
-      }
+      }   
   
       // Проверяем и валидируем refresh-токен
       const tokens = await this.authService.refreshToken(refreshToken);
@@ -62,6 +64,7 @@ export class AuthController {
           secure: true, // HTTPS-only
           sameSite: 'none', // Или 'lax', в зависимости от вашей ситуации
           maxAge: 20 * 24 * 60 * 60,
+          path: '/'
         })
         .send({ accessToken: tokens.accessToken });
   

@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy, StrategyOptionsWithoutRequest } from 'passport-jw
 import { JwtPayload } from './access.jwt.strategy';
 
 @Injectable()
-export class AccessJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(private readonly configService: ConfigService) {
     const jwtRefreshSecret = configService.get<string>('JWT_REFRESH_SECRET') || 'invalid secret (.env access troubles)';
 

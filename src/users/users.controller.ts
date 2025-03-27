@@ -1,14 +1,15 @@
 // eslint-disable-next-line max-len
-import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreationAttributes } from 'sequelize';
 import { User } from './users.model';
 import { UUID } from 'crypto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
-
+//??? защищять
   @Get('fetchusers')
   handleFetchUsers(@Query('keyword') keyword: string | null): object {
     return this.usersService.fetchUsers(keyword);
@@ -20,12 +21,13 @@ export class UsersController {
     return this.usersService.createUser(body);
   }
 
+  @UseGuards(AuthGuard('jwt-access'))
   @Put('updateuser/:uuid')
   handleUpdateUser(@Param('uuid') uuid: UUID, @Body() body: CreationAttributes<User>): object{
     console.log(uuid, '  ыщыф  ', body);
     return this.usersService.updateUser(uuid, body);
   }
-
+  @UseGuards(AuthGuard('jwt-access'))
   @Delete('deleteuser/:uuid')
   async deleteUser(@Param('uuid') uuid: UUID) {
     const deleted = await this.usersService.deleteUser(uuid);
