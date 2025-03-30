@@ -30,7 +30,7 @@ export class AuthController {
       await this.usersService.createUser({ email, password });
     } catch(err: unknown){
       console.log(err);
-      res.status(500).send({ err: err });
+      res.status(500).send({ error: err });
     }
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -46,17 +46,17 @@ export class AuthController {
   async handleRefresh(@Req() req: FastifyRequest, @Res() res: FastifyReply): Promise<void> {
     try {
       // Берём refresh-токен из кук
-      
+
       const refreshToken = req.cookies?.refreshToken;
-      console.log('rtyr', refreshToken)
+      console.log('rtyr', refreshToken);
       if (refreshToken === undefined) {
-        console.log('sdfsdf', req)
+        //console.log('sdfsdf', req);
         throw new UnauthorizedException('Refresh token отсутствует');
-      }   
-  
+      }
+
       // Проверяем и валидируем refresh-токен
       const tokens = await this.authService.refreshToken(refreshToken);
-  
+
       // Ставим новый refresh-токен в cookie
       res
         .cookie('refreshToken', tokens.refreshToken, {
@@ -64,10 +64,10 @@ export class AuthController {
           secure: true, // HTTPS-only
           sameSite: 'none', // Или 'lax', в зависимости от вашей ситуации
           maxAge: 20 * 24 * 60 * 60,
-          path: '/'
+          path: '/',
         })
-        .send({ accessToken: tokens.accessToken });
-  
+        .send({ accessToken: tokens.accessToken, email: tokens.email });
+
     } catch (error) {
       throw new UnauthorizedException('Refresh token невалиден или истёк');
     }

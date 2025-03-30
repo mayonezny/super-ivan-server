@@ -1,4 +1,4 @@
-// eslint-disable-next-line max-len
+
 import { Controller, Get, Post, Body, Query, Delete, Param, HttpException, HttpStatus, Put, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreationAttributes } from 'sequelize';

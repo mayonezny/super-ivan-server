@@ -32,7 +32,7 @@ export class AuthService {
   generateAccessToken(payload: object): string {
     return this.jwtService.sign(payload, {
       secret: this.jwtSecret,
-      expiresIn: '10m',
+      expiresIn: '10s',
     }); // Генерация токена с 10min сроком действия
   }
 
@@ -46,19 +46,19 @@ export class AuthService {
   async refreshToken(token: string){
     try {
       const decoded = this.jwtService.verify(token, { secret: this.configService.get('JWT_REFRESH_SECRET') });
-  
+
       const email = decoded.email;
-  
+
       // Опционально: проверить, есть ли пользователь с таким id и не заблокирован ли он.
-  
+
       const payload = { email: email };
-  
+
       // Генерируем новые токены
-      const accessToken = this.jwtService.sign(payload, { secret: this.configService.get('JWT_SECRET'), expiresIn: '10m' });
-      const refreshToken = this.jwtService.sign(payload, { secret: this.configService.get('JWT_REFRESH_SECRET'), expiresIn: '20d' });
-  
-      return { accessToken, refreshToken };
-      
+      const accessToken = this.generateAccessToken(payload);
+      const refreshToken = this.generateRefreshToken(payload);
+
+      return { accessToken, refreshToken, email };
+
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }
