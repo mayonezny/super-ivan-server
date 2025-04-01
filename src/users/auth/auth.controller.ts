@@ -22,7 +22,7 @@ export class AuthController {
   // }
 
   @Post('register')
-  async handleRegister(@Body() body: CreationAttributes<User>, @Res() res: FastifyReply): Promise<void> {
+  async handleRegister(@Body() body: CreationAttributes<User> & { doNotRemember?: boolean }, @Res() res: FastifyReply): Promise<void> {
     console.log(body);
     const { email, password, accessToken, refreshToken } = await this.authService.register(body);
     console.log('zzz', refreshToken);
@@ -36,50 +36,38 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 20 * 24 * 60 * 60, // Fastify ожидает время в секундах
+      ...(body.doNotRemember ? {} : { maxAge: 20 * 24 * 60 * 60 }), // Fastify ожидает время в секундах
       path:'/',
     })
       .send({ accessToken: accessToken });
   }
 
   @Post('login')
-  async handleLogin(@Body() body: CreationAttributes<User>, @Res() res: FastifyReply): Promise<void> {
+  async handleLogin(@Body() body: CreationAttributes<User> & { doNotRemember?: boolean }, @Res() res: FastifyReply): Promise<void> {
     console.log(body);
     try{
       const { accessToken, refreshToken } = await this.authService.login(body);
+      console.log(body.doNotRemember);
       if(accessToken !== '' && refreshToken !== ''){
         res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
           secure: true,
           sameSite: 'none',
-          maxAge: 20 * 24 * 60 * 60, // Fastify ожидает время в секундах
+          ...(body.doNotRemember ? {} : { maxAge: 20 * 24 * 60 * 60 }), // Fastify ожидает время в секундах
           path:'/',
         })
           .send({ accessToken: accessToken });
-      }
-      else{
+      } else{
         res.status(500).send('Что-то пошло не так, токены пустые');
       }
-    }
-    catch(error: any){
+    } catch(error: any){
       res.status(400).send(error.message);
     }
-    // const { email, password, accessToken, refreshToken } = await this.authService.login(body);
-    // console.log('zzz', refreshToken);
-    // try{
-    //   await this.usersService.createUser({ email, password });
-    // } catch(err: unknown){
-    //   console.log(err);
-    //   res.status(500).send({ error: err });
-    // }
-    // res.cookie('refreshToken', refreshToken, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'none',
-    //   maxAge: 20 * 24 * 60 * 60, // Fastify ожидает время в секундах
-    //   path:'/',
-    // })
-    //   .send({ accessToken: accessToken });
+  }
+
+  @Post('logout')
+  handleLogout(@Res() response: FastifyReply){
+    response.clearCookie('refreshToken', { path: '/', secure: true, sameSite: 'none' }).send( {message: 'Кука удалена!'} );
   }
 
   @Post('refresh')
