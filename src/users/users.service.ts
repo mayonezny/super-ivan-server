@@ -31,6 +31,14 @@ export class UsersService {
     }): this.userModel.findAll();
   }
 
+  findUser(email: string):Promise<User | null>{
+    return this.userModel.findOne({ where: { email } })
+  }
+
+  returnField(email: string, fieldName: string){
+    return this.userModel.findOne({ where: { email }, attributes: [ fieldName ] });
+  }
+
   createUser(data):Promise<User>{
     return this.userModel.create(data);
   }

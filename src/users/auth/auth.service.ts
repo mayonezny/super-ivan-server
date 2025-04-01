@@ -7,13 +7,15 @@ import { UUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users.service';
+import { error } from 'console';
 
 // Далее используем Sequelize.fn
 
 @Injectable()
 export class AuthService {
 
-  constructor(@InjectModel(User) private userModel: typeof User, private configService: ConfigService, private readonly jwtService: JwtService) {}
+  constructor(@InjectModel(User) private userModel: typeof User, private configService: ConfigService, private readonly jwtService: JwtService, private userService: UsersService) {}
 
   private readonly jwtSecret = this.configService.get<string>('JWT_SECRET') || 'invalid secret (.env access troubles)';
   private readonly jwtRefreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET') || 'invalid refresh secret (.env access troubles)';
@@ -26,7 +28,13 @@ export class AuthService {
 
   // Сравнение пароля с хешем
   async comparePasswords(password: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword); // Сравниваем пароль с хешем
+    const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+    if(isPasswordValid){
+      return true;
+    }
+    else{
+      throw new Error('PasswordsDoNotMatch')
+    }
   }
 
   generateAccessToken(payload: object): string {
@@ -77,6 +85,32 @@ export class AuthService {
     const accessToken = this.generateAccessToken({ email });
     const refreshToken = this.generateRefreshToken({ email });
     return { email: email, password: hashedPassword, accessToken: accessToken, refreshToken: refreshToken};
+  }
+
+  async login(data: CreationAttributes<User>){ //АЛЕРТ! ТУТ УБРАН ПРОМИС! МОЖЕТ БЫТЬ БАБАХ!
+    const { email, password } = data;
+    const user = await this.userService.findUser(email);
+    if(!user){
+      throw new Error('UserNotFound')
+    }
+    const passwordHashObject = await this.userService.returnField(email, 'password');
+    const passwordHash = passwordHashObject?.password;
+    if (passwordHash){
+      try{
+        const isPasswordVaild = await this.comparePasswords(password, passwordHash);
+        if(isPasswordVaild){
+          const accessToken = this.generateAccessToken({ email });
+          const refreshToken = this.generateRefreshToken({ email });
+          return { accessToken: accessToken, refreshToken: refreshToken};
+        }
+      }
+      catch(error: any){
+        throw new Error(error.message);
+      } 
+    }
+    return { accessToken: '', refreshToken: '' }
+    
+    
   }
 
   createUser(data: CreationAttributes<User>):Promise<User>{

@@ -42,6 +42,46 @@ export class AuthController {
       .send({ accessToken: accessToken });
   }
 
+  @Post('login')
+  async handleLogin(@Body() body: CreationAttributes<User>, @Res() res: FastifyReply): Promise<void> {
+    console.log(body);
+    try{
+      const { accessToken, refreshToken } = await this.authService.login(body);
+      if(accessToken !== '' && refreshToken !== ''){
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          maxAge: 20 * 24 * 60 * 60, // Fastify ожидает время в секундах
+          path:'/',
+        })
+          .send({ accessToken: accessToken });
+      }
+      else{
+        res.status(500).send('Что-то пошло не так, токены пустые');
+      }
+    }
+    catch(error: any){
+      res.status(400).send(error.message);
+    }
+    // const { email, password, accessToken, refreshToken } = await this.authService.login(body);
+    // console.log('zzz', refreshToken);
+    // try{
+    //   await this.usersService.createUser({ email, password });
+    // } catch(err: unknown){
+    //   console.log(err);
+    //   res.status(500).send({ error: err });
+    // }
+    // res.cookie('refreshToken', refreshToken, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'none',
+    //   maxAge: 20 * 24 * 60 * 60, // Fastify ожидает время в секундах
+    //   path:'/',
+    // })
+    //   .send({ accessToken: accessToken });
+  }
+
   @Post('refresh')
   async handleRefresh(@Req() req: FastifyRequest, @Res() res: FastifyReply): Promise<void> {
     try {
